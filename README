@@ -1,0 +1,20 @@
+archive
+=======
+
+A collection of Go archive packages.
+
+ar
+--
+
+Package ar implements access to ar archives.
+Currently, only read access is supported.
+
+Modeled after http://golang.org/pkg/archive/tar/.
+
+deb
+---
+
+Package deb implements access to Debian software packages.
+Currently, only read access is supported.
+
+Modeled after https://github.com/andytinycat/debeasy.
