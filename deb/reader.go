@@ -1,6 +1,7 @@
 package deb
 
 import (
+	"archive/tar"
 	"crypto/md5"
 	"crypto/sha1"
 	"crypto/sha256"
@@ -53,7 +54,6 @@ func NewPackage(path string) (*Package, error) {
 			break
 		}
 
-		err = nil
 		switch hdr.Name {
 		case "control.tar.gz":
 			err = pkg.readControl(ar)
@@ -62,7 +62,15 @@ func NewPackage(path string) (*Package, error) {
 		case "data.tar.bz2":
 			err = ErrFormat
 		case "data.tar.gz":
-			err = pkg.readData(ar)
+			r, err := NewTarGzReader(ar)
+			if err != nil {
+				if err != io.EOF {
+					return nil, err
+				}
+				return nil, ErrData
+			}
+
+			err = pkg.readData(r)
 		case "data.tar.lzma":
 			err = ErrFormat
 		case "data.tar.xz":
@@ -131,15 +139,7 @@ func (p *Package) readControl(ar *ar.Reader) error {
 }
 
 // Reads the data file for a listing of files the package installs.
-func (p *Package) readData(ar *ar.Reader) error {
-	r, err := NewTarGzReader(ar)
-	if err != nil {
-		if err != io.EOF {
-			return err
-		}
-		return ErrData
-	}
-
+func (p *Package) readData(r *tar.Reader) error {
 	for {
 		hdr, err := r.Next()
 		if err != nil {
