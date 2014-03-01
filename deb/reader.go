@@ -65,6 +65,8 @@ func NewPackage(path string) (*Package, error) {
 			err = pkg.readData(ar)
 		case "data.tar.lzma":
 			err = ErrFormat
+		case "data.tar.xz":
+			err = ErrFormat
 		}
 
 		if err != nil {
