@@ -60,7 +60,8 @@ func NewPackage(path string) (*Package, error) {
 		case "data.tar":
 			err = ErrFormat
 		case "data.tar.bz2":
-			err = ErrFormat
+			r := NewTarBz2Reader(ar)
+			err = pkg.readData(r)
 		case "data.tar.gz":
 			r, err := NewTarGzReader(ar)
 			if err != nil {
